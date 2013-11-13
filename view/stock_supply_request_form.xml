@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<!-- The COPYRIGHT file at the top level of this repository contains the full
+     copyright notices and license terms. -->
+<data>
+    <xpath expr="/form/field[@name='to_warehouse']" position="after">
+        <label name="days"/>
+        <field name="days"/>
+        <button name="fill_request" string="Fill Request" colspan="2"/>
+    </xpath>
+</data>
