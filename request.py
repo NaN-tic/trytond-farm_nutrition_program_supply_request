@@ -4,6 +4,8 @@ from trytond.model import ModelView, fields
 from trytond.pool import Pool, PoolMeta
 from trytond.transaction import Transaction
 from trytond.pyson import Eval, Not, Equal
+from trytond.modules.stock_supply_request.supply_request import _STATES, \
+    _DEPENDS
 
 __all__ = ['SupplyRequest']
 
@@ -13,7 +15,7 @@ __metaclass__ = PoolMeta
 class SupplyRequest:
     __name__ = 'stock.supply_request'
 
-    days = fields.Integer('Days')
+    days = fields.Integer('Days', states=_STATES, depends=_DEPENDS)
 
     @classmethod
     def __setup__(cls):
@@ -44,6 +46,9 @@ class SupplyRequest:
         for request in requests:
             location = request.to_warehouse
             days = request.days
+
+            if not days:
+                cls.raise_user_error('no_days', request.rec_name)
 
             locations = Location.search([('parent', 'child_of', location.id)])
             locations = [l.id for l in locations]
