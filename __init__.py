@@ -8,4 +8,4 @@ from request import *
 def register():
     Pool.register(
         SupplyRequest,
-        module='nutrition_program_fill_stock_request', type_='model')
+        module='nutrition_program_supply_request', type_='model')
