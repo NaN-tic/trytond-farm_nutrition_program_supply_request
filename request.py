@@ -84,7 +84,7 @@ class SupplyRequest:
                 line = RequestLine()
                 request.lines.append(line)
                 line.product = product
-                line.uom = product.default_uom
-                line.quantity = quantity * days
+                line.quantity = Uom.round(quantity * days,
+                    product.default_uom.rounding)
                 line.to_location = silo
             request.save()
