@@ -1,0 +1,7 @@
+# 
+msgid ""
+msgstr "Content-Type: text/plain; charset=utf-8\n"
+
+msgctxt "view:stock.supply_request:"
+msgid "Fill Request"
+msgstr "Rellenar solicitud"

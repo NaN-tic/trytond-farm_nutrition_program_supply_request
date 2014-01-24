@@ -21,13 +21,13 @@ class TestCase(unittest.TestCase):
 
     def setUp(self):
         trytond.tests.test_tryton.install_module(
-            'nutrition_program_supply_request')
+            'farm_nutrition_program_supply_request')
 
     def test0005views(self):
         '''
         Test views.
         '''
-        test_view('nutrition_program_supply_request')
+        test_view('farm_nutrition_program_supply_request')
 
     def test0006depends(self):
         '''
