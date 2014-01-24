@@ -21,12 +21,11 @@ class SupplyRequest:
     def __setup__(cls):
         super(SupplyRequest, cls).__setup__()
         cls._error_messages.update({
-                'from_location': 'A default from location must be defined',
                 'no_silo': 'No silo defined for location "%s"',
-                'no_days': 'Request "%s" has no days defined. Days are needed'
-                ' to fill request automatically',
-                'no_products_found': 'No feed products had been found for '
-                    'location "%s"',
+                'no_days': 'Request "%s" has the Days field empty.\n'
+                    'Days are needed to fill the request automatically',
+                'no_nutrition_program_found': 'There isn\'t any Nutrition '
+                    'Program active for the animals of farm "%s".',
                 })
         cls._buttons.update({
                 'fill_request': {
@@ -97,7 +96,7 @@ class SupplyRequest:
                     quantity_by_product_and_silo[silo] = silo_quantities
 
             if not quantity_by_product_and_silo:
-                cls.raise_user_error('no_products_found',
+                cls.raise_user_error('no_nutrition_program_found',
                     request.to_warehouse.rec_name)
 
             RequestLine.delete(RequestLine.search([('request', '=', request)]))
