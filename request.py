@@ -40,51 +40,78 @@ class SupplyRequest:
         pool = Pool()
         Location = pool.get('stock.location')
         Lot = pool.get('stock.lot')
-        Uom = pool.get('product.uom')
+        Product = pool.get('product.product')
         RequestLine = pool.get('stock.supply_request.line')
+        Uom = pool.get('product.uom')
 
         for request in requests:
-            location = request.to_warehouse
             days = request.days
-
             if not days:
                 cls.raise_user_error('no_days', request.rec_name)
 
-            locations = Location.search([('parent', 'child_of', location.id)])
-            locations = [l.id for l in locations]
-            try:
-                silo, = Location.search([
-                        ('locations_to_fed', 'in', locations),
-                        ('silo', '=', True),
+            wh_locations = Location.search([
+                    ('parent', 'child_of',
+                        request.to_warehouse.storage_location.id),
+                    ])
+            wh_locations_ids = [l.id for l in wh_locations]
+            silos = Location.search([
+                    ('silo', '=', True),
+                    ('locations_to_fed', 'in', wh_locations_ids),
                     ], limit=1)
-            except ValueError:
-                cls.raise_user_error('no_silo', location.rec_name)
+            if not silos:
+                cls.raise_user_error('no_silo', request.to_warehouse.rec_name)
 
-            products_quantity = {}
-            with Transaction().set_context(locations=locations):
-                lots_in_warehouse = Lot.search([('quantity', '>', 0)])
-                for lot in lots_in_warehouse:
-                    if not lot.nutrition_program or \
-                            not lot.nutrition_program.bom:
-                        continue
-                    for bom_line in lot.nutrition_program.bom.inputs:
-                        product = bom_line.product
-                        quantity = Uom.compute_qty(bom_line.uom,
-                            bom_line.quantity, product.default_uom)
-                        if product in products_quantity:
-                            products_quantity[product] += quantity
-                        else:
-                            products_quantity[product] = quantity
-            if len(products_quantity) == 0:
-                cls.raise_user_error('no_products_found', location.rec_name)
+            quantity_by_product_and_silo = {}
+            for silo in silos:
+                silo_quantities = {}
+
+                silo_locations_ids = list(set(wh_locations_ids) &
+                    set([l.id for l in silo.locations_to_fed]))
+                with Transaction().set_context(locations=silo_locations_ids):
+                    lots_in_silo_locations = Lot.search([
+                            ('quantity', '>', 0),
+                            ('animal_type', '!=', None)
+                            ])
+                    for lot in lots_in_silo_locations:
+                        animal = (lot.animal if lot.animal_type != 'group'
+                            else lot.animal_group)
+                        if (not animal.nutrition_program or
+                                not animal.nutrition_program.bom):
+                            continue
+
+                        feed_product = animal.nutrition_program.product
+                        feed_quantity = 0.0
+                        for bom_line in animal.nutrition_program.bom.outputs:
+                            if bom_line.product != feed_product:
+                                continue
+                            feed_quantity = Uom.compute_qty(bom_line.uom,
+                                bom_line.quantity, feed_product.default_uom)
+                            break
+                        feed_quantity *= lot.quantity * days
+
+                        if feed_quantity and feed_product in silo_quantities:
+                            silo_quantities[feed_product] += feed_quantity
+                        elif feed_quantity:
+                            silo_quantities[feed_product] = feed_quantity
+                if silo_quantities:
+                    quantity_by_product_and_silo[silo] = silo_quantities
+
+            if not quantity_by_product_and_silo:
+                cls.raise_user_error('no_products_found',
+                    request.to_warehouse.rec_name)
 
             RequestLine.delete(RequestLine.search([('request', '=', request)]))
             request.lines = []
-            for product, quantity in products_quantity.iteritems():
-                line = RequestLine()
-                request.lines.append(line)
-                line.product = product
-                line.quantity = Uom.round(quantity * days,
-                    product.default_uom.rounding)
-                line.to_location = silo
+            for silo in quantity_by_product_and_silo:
+                for feed_product, quantity in (
+                        quantity_by_product_and_silo[silo].iteritems()):
+                    with Transaction().set_context(locations=[silo.id]):
+                        quantity -= Product(feed_product.id).quantity
+                    if quantity > 0.0:
+                        line = RequestLine()
+                        request.lines.append(line)
+                        line.product = feed_product
+                        line.quantity = Uom.round(quantity,
+                            feed_product.default_uom.rounding)
+                        line.to_location = silo
             request.save()
