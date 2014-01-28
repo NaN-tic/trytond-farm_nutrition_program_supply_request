@@ -3,9 +3,9 @@
 from trytond.model import ModelView, fields
 from trytond.pool import Pool, PoolMeta
 from trytond.transaction import Transaction
-from trytond.pyson import Eval, Not, Equal
-from trytond.modules.stock_supply_request.supply_request import _STATES, \
-    _DEPENDS
+from trytond.pyson import Bool, Equal, Eval, Not, Or
+from trytond.modules.stock_supply_request.supply_request import (_STATES,
+    _DEPENDS)
 
 __all__ = ['SupplyRequest']
 
@@ -29,7 +29,8 @@ class SupplyRequest:
                 })
         cls._buttons.update({
                 'fill_request': {
-                    'readonly': Not(Equal(Eval('state'), 'draft'))
+                    'readonly': Or(Not(Equal(Eval('state'), 'draft')),
+                        Bool(Eval('lines', 0))),
                 }
             })
 

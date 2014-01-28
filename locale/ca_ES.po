@@ -1,0 +1,28 @@
+# 
+msgid ""
+msgstr "Content-Type: text/plain; charset=utf-8\n"
+
+msgctxt "error:stock.supply_request:"
+msgid "No silo defined for location \"%s\""
+msgstr "No s'ha definit cap sitja per a la ubicació \"%s\""
+
+msgctxt "error:stock.supply_request:"
+msgid ""
+"Request \"%s\" has the Days field empty.\n"
+"Days are needed to fill the request automatically"
+msgstr ""
+"La sol·licitud \"%s\" té el camp Dies buit.\n"
+"Aquest camp és necessari per omplir la sol·licitud automàticament."
+
+msgctxt "error:stock.supply_request:"
+msgid "There isn't any Nutrition Program active for the animals of farm \"%s\"."
+msgstr "No hi ha cap programa de nutrició actiu pels animals de la granja \"%s\"."
+
+#, fuzzy
+msgctxt "field:stock.supply_request,days:"
+msgid "Days"
+msgstr "Dies"
+
+msgctxt "view:stock.supply_request:"
+msgid "Fill Request"
+msgstr "Omplir sol·licitud"
