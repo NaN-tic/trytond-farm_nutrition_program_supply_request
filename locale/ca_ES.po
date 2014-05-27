@@ -18,7 +18,6 @@ msgctxt "error:stock.supply_request:"
 msgid "There isn't any Nutrition Program active for the animals of farm \"%s\"."
 msgstr "No hi ha cap programa de nutrició actiu pels animals de la granja \"%s\"."
 
-#, fuzzy
 msgctxt "field:stock.supply_request,days:"
 msgid "Days"
 msgstr "Dies"
