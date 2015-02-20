@@ -57,7 +57,7 @@ class SupplyRequest:
             silos = Location.search([
                     ('silo', '=', True),
                     ('locations_to_fed', 'in', wh_locations_ids),
-                    ], limit=1)
+                    ])
             if not silos:
                 cls.raise_user_error('no_silo', request.to_warehouse.rec_name)
 
