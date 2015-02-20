@@ -75,6 +75,8 @@ class SupplyRequest:
                     for lot in lots_in_silo_locations:
                         animal = (lot.animal if lot.animal_type != 'group'
                             else lot.animal_group)
+                        if not animal:
+                            continue
                         if (not animal.nutrition_program or
                                 not animal.nutrition_program.bom):
                             continue
