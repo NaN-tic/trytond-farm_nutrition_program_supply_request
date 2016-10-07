@@ -113,7 +113,6 @@ class SupplyRequest:
                         line = RequestLine()
                         request.lines.append(line)
                         line.product = feed_product
-                        line.quantity = Uom.round(quantity,
-                            feed_product.default_uom.rounding)
+                        line.quantity = feed_product.default_uom.round(quantity)
                         line.to_location = silo
             request.save()
