@@ -1,10 +1,10 @@
 # The COPYRIGHT file at the top level of this repository contains the full
 # copyright notices and license terms.
 from trytond.pool import Pool
-from request import *
+from . import request
 
 
 def register():
     Pool.register(
-        SupplyRequest,
+        request.SupplyRequest,
         module='farm_nutrition_program_supply_request', type_='model')

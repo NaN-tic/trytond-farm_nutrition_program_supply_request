@@ -5,9 +5,18 @@ copyright notices and license terms. -->
     <data>
         <record model="ir.ui.view" id="supply_request_view_form">
             <field name="model">stock.supply_request</field>
-            <field name="inherit"
-                ref="stock_supply_request.supply_request_view_form"/>
+            <field name="inherit" ref="stock_supply_request.supply_request_view_form"/>
             <field name="name">stock_supply_request_form</field>
+        </record>
+
+        <record model="ir.model.button" id="supply_request_confirm_button">
+            <field name="name">fill_request</field>
+            <field name="string">Fill Request</field>
+            <field name="model" search="[('model', '=', 'stock.supply_request')]"/>
+        </record>
+        <record model="ir.model.button-res.group" id="supply_request_confirm_button_group_stock">
+            <field name="button" ref="supply_request_confirm_button"/>
+            <field name="group" ref="stock.group_stock"/>
         </record>
     </data>
 </tryton>

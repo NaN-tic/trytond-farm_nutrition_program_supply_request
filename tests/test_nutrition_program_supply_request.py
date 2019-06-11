@@ -7,11 +7,7 @@ from trytond.tests.test_tryton import ModuleTestCase
 
 
 class TestCase(ModuleTestCase):
-    '''
-    Test module.
-    '''
     module = 'farm_nutrition_program_supply_request'
-
 
 def suite():
     suite = trytond.tests.test_tryton.suite()

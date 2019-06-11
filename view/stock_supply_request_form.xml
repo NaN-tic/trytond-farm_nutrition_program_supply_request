@@ -5,6 +5,6 @@
     <xpath expr="/form/field[@name='to_warehouse']" position="after">
         <label name="days"/>
         <field name="days"/>
-        <button name="fill_request" string="Fill Request" colspan="2"/>
+        <button name="fill_request" colspan="2"/>
     </xpath>
 </data>

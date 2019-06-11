@@ -4,15 +4,15 @@ from trytond.model import ModelView, fields
 from trytond.pool import Pool, PoolMeta
 from trytond.transaction import Transaction
 from trytond.pyson import Bool, Equal, Eval, Not, Or
+from trytond.exceptions import UserError
+from trytond.i18n import gettext
 from trytond.modules.stock_supply_request.supply_request import (_STATES,
     _DEPENDS)
 
 __all__ = ['SupplyRequest']
 
-__metaclass__ = PoolMeta
 
-
-class SupplyRequest:
+class SupplyRequest(metaclass=PoolMeta):
     __name__ = 'stock.supply_request'
 
     days = fields.Integer('Days', states=_STATES, depends=_DEPENDS)
@@ -20,13 +20,6 @@ class SupplyRequest:
     @classmethod
     def __setup__(cls):
         super(SupplyRequest, cls).__setup__()
-        cls._error_messages.update({
-                'no_silo': 'No silo defined for location "%s"',
-                'no_days': 'Request "%s" has the Days field empty.\n'
-                    'Days are needed to fill the request automatically',
-                'no_nutrition_program_found': 'There isn\'t any Nutrition '
-                    'Program active for the animals of farm "%s".',
-                })
         cls._buttons.update({
                 'fill_request': {
                     'readonly': Or(Not(Equal(Eval('state'), 'draft')),
@@ -47,7 +40,8 @@ class SupplyRequest:
         for request in requests:
             days = request.days
             if not days:
-                cls.raise_user_error('no_days', request.rec_name)
+                raise UserError(gettext('farm_nutrition_program_supply_request.'
+                        'msg_no_days', request=request.rec_name))
 
             wh_locations = Location.search([
                     ('parent', 'child_of',
@@ -59,7 +53,8 @@ class SupplyRequest:
                     ('locations_to_fed', 'in', wh_locations_ids),
                     ])
             if not silos:
-                cls.raise_user_error('no_silo', request.to_warehouse.rec_name)
+                raise UserError(gettext('farm_nutrition_program_supply_request.'
+                    'msg_no_silo', farm=request.to_warehouse.rec_name))
 
             quantity_by_product_and_silo = {}
             for silo in silos:
@@ -99,14 +94,15 @@ class SupplyRequest:
                     quantity_by_product_and_silo[silo] = silo_quantities
 
             if not quantity_by_product_and_silo:
-                cls.raise_user_error('no_nutrition_program_found',
-                    request.to_warehouse.rec_name)
+                raise UserError(gettext('farm_nutrition_program_supply_request.'
+                        'msg_no_nutrition_program_found',
+                        request=request.to_warehouse.rec_name))
 
             RequestLine.delete(RequestLine.search([('request', '=', request)]))
             request.lines = []
             for silo in quantity_by_product_and_silo:
                 for feed_product, quantity in (
-                        quantity_by_product_and_silo[silo].iteritems()):
+                        iter(quantity_by_product_and_silo[silo].items())):
                     with Transaction().set_context(locations=[silo.id]):
                         quantity -= Product(feed_product.id).quantity
                     if quantity > 0.0:
