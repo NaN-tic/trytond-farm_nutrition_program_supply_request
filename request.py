@@ -6,8 +6,7 @@ from trytond.transaction import Transaction
 from trytond.pyson import Bool, Equal, Eval, Not, Or
 from trytond.exceptions import UserError
 from trytond.i18n import gettext
-from trytond.modules.stock_supply_request.supply_request import (_STATES,
-    _DEPENDS)
+from trytond.modules.stock_supply_request.supply_request import (_STATES)
 
 __all__ = ['SupplyRequest']
 
@@ -15,7 +14,7 @@ __all__ = ['SupplyRequest']
 class SupplyRequest(metaclass=PoolMeta):
     __name__ = 'stock.supply_request'
 
-    days = fields.Integer('Days', states=_STATES, depends=_DEPENDS)
+    days = fields.Integer('Days', states=_STATES)
 
     @classmethod
     def __setup__(cls):
