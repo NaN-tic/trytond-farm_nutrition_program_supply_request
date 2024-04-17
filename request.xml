@@ -12,7 +12,7 @@ copyright notices and license terms. -->
         <record model="ir.model.button" id="supply_request_confirm_button">
             <field name="name">fill_request</field>
             <field name="string">Fill Request</field>
-            <field name="model" search="[('model', '=', 'stock.supply_request')]"/>
+            <field name="model">stock.supply_request</field>
         </record>
         <record model="ir.model.button-res.group" id="supply_request_confirm_button_group_stock">
             <field name="button" ref="supply_request_confirm_button"/>
