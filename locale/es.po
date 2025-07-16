@@ -1,24 +1,6 @@
-# 
+#
 msgid ""
 msgstr "Content-Type: text/plain; charset=utf-8\n"
-
-msgctxt "error:stock.supply_request:"
-msgid "No silo defined for location \"%s\""
-msgstr "No se ha definido ningún silo para la ubicación \"%s\""
-
-msgctxt "error:stock.supply_request:"
-msgid ""
-"Request \"%s\" has the Days field empty.\n"
-"Days are needed to fill the request automatically"
-msgstr ""
-"La solicitud \"%s\" tiene el campo Días vacío.\n"
-"Este campo es necesario para rellenar la solicitud automáticamente."
-
-msgctxt "error:stock.supply_request:"
-msgid "There isn't any Nutrition Program active for the animals of farm \"%s\"."
-msgstr ""
-"No hay ningún programa de alimentación activo para los animales de la granja"
-" \"%s\"."
 
 msgctxt "field:stock.supply_request,days:"
 msgid "Days"
